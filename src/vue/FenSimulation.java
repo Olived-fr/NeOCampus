@@ -14,14 +14,21 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import capteurs.EnumType;
+
 public class FenSimulation extends JFrame {
 	
 	JButton bAjoutCapt, bConnexion;
 	JTable tListCapt;
+	DefaultTableModel dtm;
+	JFrame laFen;
+	
+	int numCapt = 1;
 	
 	public FenSimulation(String titre) {
 		super(titre);
 		
+		laFen = this;
 		//Définition de la fenetre
 		this.setBounds(new Rectangle(800, 400));
 		this.setLocationRelativeTo(null);
@@ -37,9 +44,10 @@ public class FenSimulation extends JFrame {
 								"Identifiant",
 								"Type de localisation",
 								"Localisation",
-								"Type de donn�es",
+								"Type de donnees",
 								"Intervalle"};
-		tListCapt = new JTable(new DefaultTableModel(nomsColonnes, 0));
+		dtm = new DefaultTableModel(nomsColonnes, 0);
+		tListCapt = new JTable(dtm);
 		JScrollPane scroll = new JScrollPane(tListCapt);
 		tListCapt.setFillsViewportHeight(true);
 		add(scroll, BorderLayout.CENTER);
@@ -60,23 +68,32 @@ public class FenSimulation extends JFrame {
 					String loc = (String) JOptionPane.showInputDialog(null, "Localisation", "Localisation", JOptionPane.DEFAULT_OPTION, null, liste, "Interieur");
 					
 					if(loc != null) {
+						String localisation;
 						if(loc == "Interieur") {
 							String batiment = JOptionPane.showInputDialog("Batiment");
 							Integer etage = Integer.valueOf(JOptionPane.showInputDialog("Etage"));
 							String salle = JOptionPane.showInputDialog("Salle");
 							String positionRel = JOptionPane.showInputDialog("Position relative");
+							
+							localisation = "<'" + batiment + "', " + etage + ", '" + salle + "', '" + positionRel + "'>";
 						} else {
 							Float lat = Float.valueOf(JOptionPane.showInputDialog("Latitude (utilisez un point pour un nombre décimal)"));
 							Float longi = Float.valueOf(JOptionPane.showInputDialog("Longitude (utilisez un point pour un nombre décimal)"));
+							localisation = "(" + lat + ", " + longi + ")";
 						}
+						
+						EnumType enu = EnumType.EAUCHAUDE;
+						Object[] typesDonnees = enu.getDeclaringClass().getEnumConstants();
+						EnumType type = (EnumType) JOptionPane.showInputDialog(null, "Types de donnees", "Choisissez le type", JOptionPane.DEFAULT_OPTION, null, typesDonnees, "temperature");
 
 						Integer minIntervalle = Integer.valueOf(JOptionPane.showInputDialog("Intervalle min"));
 						Integer maxIntervalle = Integer.valueOf(JOptionPane.showInputDialog("Intervalle max"));
+						String intervalle = "[" + minIntervalle + " - " + maxIntervalle + "]";
 						
 						
-						//TODO Ajouter champs au tableau
-						
-						// Peut-etre que sauvegarder les capteurs dans un fichier sera plus simple pour les récupérer dans l'autre fenetre
+						//Ajout des champs au tableau
+						dtm.addRow(new Object[] {numCapt, id, loc, localisation, type, intervalle});
+						numCapt++;
 					}
 				}
 			}
@@ -87,8 +104,8 @@ public class FenSimulation extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				bConnexion.getTopLevelAncestor().setVisible(false);
-				FenSimulationSuiv fen2 = new FenSimulationSuiv("Interface de simulation");
+				laFen.setVisible(false);
+				FenSimulationSuiv fen2 = new FenSimulationSuiv("Interface de simulation", laFen);
 				fen2.setVisible(true);
 				
 			}

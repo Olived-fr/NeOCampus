@@ -24,10 +24,13 @@ public class FenSimulationSuiv extends JFrame {
 	JButton bDeconnexion;
 	JButton tFrequenceButton ;
 	String champFrequence ;
+	JFrame laFen, fenPrec;
 
-	public FenSimulationSuiv(String titre) {
+	public FenSimulationSuiv(String titre, JFrame prec) {
 		super(titre);
 		
+		laFen = this;
+		fenPrec = prec;
 		// Definition de la fenetre
 		this.setBounds(new Rectangle(800, 400));
 		this.setLocationRelativeTo(null);
@@ -48,7 +51,7 @@ public class FenSimulationSuiv extends JFrame {
 		
 		panelCenter = new JPanel();
 		
-		lFreq = new JLabel("Fréquence d'envoi (s)");
+		lFreq = new JLabel("Frï¿½quence d'envoi (s)");
 		panelCenter.add(lFreq, BorderLayout.EAST);
 		
 		tFrequence = new JTextField(5);
@@ -71,8 +74,8 @@ public class FenSimulationSuiv extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Clic Deconnexion
-				
+				laFen.dispose();
+				fenPrec.setVisible(true);
 			}
 		});
 		
