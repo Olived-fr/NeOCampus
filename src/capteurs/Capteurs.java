@@ -4,6 +4,7 @@ import reseau.Reseau;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.UnknownHostException;
 
@@ -85,6 +86,11 @@ public class Capteurs {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		try {
+			reader = new BufferedReader(new InputStreamReader(reseau.getSocket().getInputStream()));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		String chaineCapteur = null;
 		if (interieur != null)
@@ -93,5 +99,10 @@ public class Capteurs {
 			chaineCapteur = "<"+id+">"+"<"+type+">"+"<"+gps.getLatitude()+">"+"<"+gps.getLongitude()+">";
 
 		printer.print(chaineCapteur);
+		try {
+		System.out.println(reader.readLine());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

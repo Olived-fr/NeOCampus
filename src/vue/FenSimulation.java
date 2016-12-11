@@ -132,8 +132,6 @@ public class FenSimulation extends JFrame {
 						else{
 							valeur = (float) (( Math.random()*( maxIntervalle - minIntervalle + 1 ) ) + minIntervalle);
 						}
-
-						System.out.println("heeeee valeur ici : " + valeur);
 						
 						//
 						listeCapteurs.add(new Capteurs(id, type, loc, minIntervalle, maxIntervalle, gps, inte, saisieValeur, valeur));
