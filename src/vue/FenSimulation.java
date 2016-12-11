@@ -154,7 +154,9 @@ public class FenSimulation extends JFrame {
 				laFen.setVisible(false);
 				FenSimulationSuiv fen2 = new FenSimulationSuiv("Interface de simulation", laFen, listeCapteurs);
 				fen2.setVisible(true);
-				
+				for(Capteurs capt : listeCapteurs) {
+					capt.connexionCapteur();
+				}
 			}
 		});
 		

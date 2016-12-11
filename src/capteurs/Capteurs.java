@@ -1,5 +1,12 @@
 package capteurs;
 
+import reseau.Reseau;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.UnknownHostException;
+
 public class Capteurs {
 
 	private String id ; 
@@ -11,6 +18,7 @@ public class Capteurs {
 	private CoordInterieur interieur ;
 	private boolean saisieValeur ; 
 	private float valeur ;
+	private Reseau reseau ;
 	
 	public Capteurs(String id, EnumType type, String localisation, int intervalleMin, 
 			int intervalleMax, CoordGps gps, CoordInterieur interieur,boolean saisieValeur, float valeur){
@@ -20,7 +28,10 @@ public class Capteurs {
 		this.intervalleMin = intervalleMin ; 
 		this.intervalleMax = intervalleMax ;
 		this.gps = gps ;
-		this.interieur = interieur ; 
+		this.interieur = interieur ;
+		this.saisieValeur = saisieValeur ;
+		this.valeur = valeur ;
+
 		
 	}
 
@@ -64,8 +75,23 @@ public class Capteurs {
 		this.valeur = valeur;
 	}
 	
+	public void connexionCapteur() {
 
-	
-	
-	
+		reseau = new Reseau();
+		BufferedReader reader = null;
+		PrintWriter printer = null;
+		try {
+			printer = new PrintWriter(reseau.getSocket().getOutputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		String chaineCapteur = null;
+		if (interieur != null)
+			chaineCapteur = "<"+id+">"+"<"+type+">"+"<"+interieur.getBatiment()+">"+"<"+interieur.getEtage()+">"+"<"+interieur.getSalle()+">"+"<"+interieur.getCommentaire()+">";
+		else if (gps != null)
+			chaineCapteur = "<"+id+">"+"<"+type+">"+"<"+gps.getLatitude()+">"+"<"+gps.getLongitude()+">";
+
+		printer.print(chaineCapteur);
+	}
 }
