@@ -54,7 +54,7 @@ public class FenSimulationSuiv extends JFrame {
 		
 		String[] nomsColonnes = {"Identifiant",
 								"Valeur mesuree",
-								"Unite"};
+								"Type de donnees"};
 		dtm = new DefaultTableModel(nomsColonnes, 0);
 		for(Capteurs capt : listeCapteurs) {
 			// TODO Générer valeur aléatoire pour chaque capteur compris dans leur intervalle
