@@ -8,12 +8,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 import capteurs.Capteurs;
@@ -97,6 +92,18 @@ public class FenSimulation extends JFrame {
 						Object[] typesDonnees = enu.getDeclaringClass().getEnumConstants();
 						EnumType type = (EnumType) JOptionPane.showInputDialog(null, "Types de donnees", "Choisissez le type", JOptionPane.DEFAULT_OPTION, null, typesDonnees, "temperature");
 
+						final JPanel panel = new JPanel();
+						panel.add(new JLabel("Obtention des valeurs\n"));
+						final JRadioButton button1 = new JRadioButton("Valeurs saisies");
+						final JRadioButton button2 = new JRadioButton("Valeurs générées");
+						ButtonGroup group = new ButtonGroup();
+						group.add(button1);
+						group.add(button2);
+						button1.setSelected(true);
+						panel.add(button1);
+						panel.add(button2);
+
+						JOptionPane.showMessageDialog(null, panel);
 						Integer minIntervalle = Integer.valueOf(JOptionPane.showInputDialog("Intervalle min"));
 						Integer maxIntervalle = Integer.valueOf(JOptionPane.showInputDialog("Intervalle max"));
 						String intervalle = "[" + minIntervalle + " - " + maxIntervalle + "]";
