@@ -10,16 +10,16 @@ public class Capteurs {
 	private String id ; 
 	private EnumType type ;
 	private String localisation ;
-	private int intervalleMin ; 
-	private int intervalleMax ;
+	private float intervalleMin ;
+	private float intervalleMax ;
 	private CoordGps gps ; 
 	private CoordInterieur interieur ;
 	private boolean saisieValeur ; 
 	private float valeur ;
 	private Reseau reseau ;
 	
-	public Capteurs(String id, EnumType type, String localisation, int intervalleMin, 
-			int intervalleMax, CoordGps gps, CoordInterieur interieur,boolean saisieValeur, float valeur){
+	public Capteurs(String id, EnumType type, String localisation, float intervalleMin,
+			float intervalleMax, CoordGps gps, CoordInterieur interieur,boolean saisieValeur, float valeur){
 		this.id = id ;
 		this.type = type ; 
 		this.localisation = localisation ; 
@@ -45,11 +45,11 @@ public class Capteurs {
 		return localisation;
 	}
 
-	public int getIntervalleMin() {
+	public float getIntervalleMin() {
 		return intervalleMin;
 	}
 
-	public int getIntervalleMax() {
+	public float getIntervalleMax() {
 		return intervalleMax;
 	}
 
@@ -72,7 +72,11 @@ public class Capteurs {
 	public void setValeur(float valeur) {
 		this.valeur = valeur;
 	}
-	
+
+	public Reseau getReseau() {
+		return reseau;
+	}
+
 	public void connexionCapteur() {
 
 		reseau = new Reseau();
@@ -96,11 +100,6 @@ public class Capteurs {
 			chaineCapteur = "ConnexionCapteur;"+id+";"+type+";"+gps.getLatitude()+";"+gps.getLongitude();
 
 		printer.println(chaineCapteur);
-		try {
-		System.out.println(reader.readLine());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	public void deconnexionCapteur() {
@@ -114,5 +113,17 @@ public class Capteurs {
 
 		printer.println("DeconnexionCapteur;"+id);
 		reseau.deconnexion();
+	}
+
+	public void transmissionValeur() {
+
+		PrintStream printer = null;
+		try {
+			printer = new PrintStream(reseau.getSocket().getOutputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		printer.println("ValeurCapteur;"+valeur);
 	}
 }

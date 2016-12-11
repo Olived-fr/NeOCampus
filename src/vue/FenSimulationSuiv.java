@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.NumberFormat;
 import java.util.List;
+import java.util.Random;
 
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
@@ -17,9 +18,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.Timer;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 
 import capteurs.Capteurs;
+
+import static com.sun.tools.doclint.Entity.and;
 
 
 public class FenSimulationSuiv extends JFrame {
@@ -49,8 +53,8 @@ public class FenSimulationSuiv extends JFrame {
 		panelMain = new JPanel(new GridLayout(2,0,2,2));
 		
 		String[] nomsColonnes = {"Identifiant",
-								"Valeur mesurée",
-								"Unité"};
+								"Valeur mesuree",
+								"Unite"};
 		dtm = new DefaultTableModel(nomsColonnes, 0);
 		for(Capteurs capt : listeCapteurs) {
 			// TODO Générer valeur aléatoire pour chaque capteur compris dans leur intervalle
@@ -69,7 +73,7 @@ public class FenSimulationSuiv extends JFrame {
 		
 		panelCenter = new JPanel();
 		
-		lFreq = new JLabel("Fr�quence d'envoi (s)");
+		lFreq = new JLabel("Frequence d'envoi (s)");
 		panelCenter.add(lFreq, BorderLayout.EAST);
 		
 		tFrequence = new JTextField(5);
@@ -84,7 +88,7 @@ public class FenSimulationSuiv extends JFrame {
 		
 		add(panelMain, BorderLayout.CENTER);
 		
-		bDeconnexion = new JButton("Déconnexion");
+		bDeconnexion = new JButton("Deconnexion");
 		add(bDeconnexion, BorderLayout.SOUTH);
 		
 		
@@ -110,7 +114,19 @@ public class FenSimulationSuiv extends JFrame {
 					champFrequence = Integer.parseInt(text) ;
 					ActionListener action = new ActionListener() {
 					      public void actionPerformed(ActionEvent evt) {
-					          System.out.println(java.util.Calendar.getInstance().getTime().toString());;		      
+					          for(Capteurs cpt : listeCapteurs) {
+								  if (!cpt.getReseau().getSocket().isClosed()) {
+									  if (!cpt.isSaisieValeur()) {
+										  Random rand = new Random();
+										  float val = rand.nextFloat() * (cpt.getIntervalleMax() - cpt.getIntervalleMin()) + cpt.getIntervalleMin();
+										  val = Math.round(val*(float)100.0) / (float)100.0;
+										  cpt.setValeur(val);
+										  dtm.setValueAt(cpt.getValeur(), listeCapteurs.indexOf(cpt), 1);
+									  }
+									  cpt.transmissionValeur();
+								  }
+							  }
+
 					      }
 					  };
 					  //atention timer en miliseconde

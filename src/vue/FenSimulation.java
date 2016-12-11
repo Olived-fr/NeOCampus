@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -81,8 +82,8 @@ public class FenSimulation extends JFrame {
 							localisation = "<'" + batiment + "', " + etage + ", '" + salle + "', '" + positionRel + "'>";
 							inte = new CoordInterieur(batiment, etage.toString(), salle, positionRel);
 						} else {
-							Float lat = Float.valueOf(JOptionPane.showInputDialog("Latitude (utilisez un point pour un nombre décimal)"));
-							Float longi = Float.valueOf(JOptionPane.showInputDialog("Longitude (utilisez un point pour un nombre décimal)"));
+							Float lat = Float.valueOf(JOptionPane.showInputDialog("Latitude (utilisez un point pour un nombre decimal)"));
+							Float longi = Float.valueOf(JOptionPane.showInputDialog("Longitude (utilisez un point pour un nombre decimal)"));
 							
 							localisation = "(" + lat + ", " + longi + ")";
 							gps = new CoordGps(lat, longi);
@@ -95,7 +96,7 @@ public class FenSimulation extends JFrame {
 						final JPanel panel = new JPanel();
 						panel.add(new JLabel("Obtention des valeurs\n"));
 						final JRadioButton button1 = new JRadioButton("Valeurs saisies");
-						final JRadioButton button2 = new JRadioButton("Valeurs générées");
+						final JRadioButton button2 = new JRadioButton("Valeurs generees");
 						ButtonGroup group = new ButtonGroup();
 						group.add(button1);
 						group.add(button2);
@@ -106,8 +107,8 @@ public class FenSimulation extends JFrame {
 						showMessageDialog(null, panel);
 
 
-						Integer minIntervalle = Integer.valueOf(JOptionPane.showInputDialog("Intervalle min"));
-						Integer maxIntervalle = Integer.valueOf(JOptionPane.showInputDialog("Intervalle max"));
+						Float minIntervalle = Float.valueOf(JOptionPane.showInputDialog("Intervalle min"));
+						Float maxIntervalle = Float.valueOf(JOptionPane.showInputDialog("Intervalle max"));
 						String intervalle = "[" + minIntervalle + " - " + maxIntervalle + "]";
 
 						boolean saisieValeur ; 
@@ -130,7 +131,9 @@ public class FenSimulation extends JFrame {
 							} while (valeur < minIntervalle || valeur > maxIntervalle);
 						}
 						else{
-							valeur = (float) (( Math.random()*( maxIntervalle - minIntervalle + 1 ) ) + minIntervalle);
+							Random rand = new Random();
+							valeur = rand.nextFloat() * (maxIntervalle - minIntervalle) + minIntervalle;
+							valeur = Math.round(valeur*(float)100.0) / (float)100.0;
 						}
 						
 						//
