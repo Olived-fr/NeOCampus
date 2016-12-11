@@ -5,6 +5,7 @@ import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -15,9 +16,12 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import capteurs.Capteurs;
+
 public class FenSimulationSuiv extends JFrame {
 	
 	JTable tListe;
+	DefaultTableModel dtm;
 	JLabel lFreq;
 	JPanel panelMain, panelCenter, panelBot;
 	JTextField tFrequence;
@@ -26,7 +30,7 @@ public class FenSimulationSuiv extends JFrame {
 	String champFrequence ;
 	JFrame laFen, fenPrec;
 
-	public FenSimulationSuiv(String titre, JFrame prec) {
+	public FenSimulationSuiv(String titre, JFrame prec, List<Capteurs> listeCapteurs) {
 		super(titre);
 		
 		laFen = this;
@@ -43,7 +47,16 @@ public class FenSimulationSuiv extends JFrame {
 		String[] nomsColonnes = {"Identifiant",
 								"Valeur mesurée",
 								"Unité"};
-		tListe = new JTable(new DefaultTableModel(nomsColonnes, 0));
+		dtm = new DefaultTableModel(nomsColonnes, 0);
+		for(Capteurs capt : listeCapteurs) {
+			// TODO Générer valeur aléatoire pour chaque capteur compris dans leur intervalle
+			int valGeneree = -1;
+			
+			//Ajout ligne au tableau
+			dtm.addRow(new Object[] {capt.getId(), valGeneree, capt.getType()});
+		}
+		
+		tListe = new JTable(dtm);
 		JScrollPane scroll = new JScrollPane(tListe);
 		tListe.setFillsViewportHeight(true);
 		panelMain.add(scroll);

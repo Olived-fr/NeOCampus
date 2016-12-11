@@ -21,6 +21,35 @@ public class Capteurs {
 		this.interieur = interieur ;
 		
 	}
+
+	public String getId() {
+		return id;
+	}
+
+	public EnumType getType() {
+		return type;
+	}
+
+	public String getLocalisation() {
+		return localisation;
+	}
+
+	public int getIntervalleMin() {
+		return intervalleMin;
+	}
+
+	public int getIntervalleMax() {
+		return intervalleMax;
+	}
+
+	public CoordGps getGps() {
+		return gps;
+	}
+
+	public CoordInterieur getInterieur() {
+		return interieur;
+	}
+	
 	
 	
 }
