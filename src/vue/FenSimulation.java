@@ -1,8 +1,6 @@
 package vue;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -15,6 +13,8 @@ import capteurs.Capteurs;
 import capteurs.CoordGps;
 import capteurs.CoordInterieur;
 import capteurs.EnumType;
+
+import static javax.swing.JOptionPane.showMessageDialog;
 
 public class FenSimulation extends JFrame {
 	
@@ -102,6 +102,7 @@ public class FenSimulation extends JFrame {
 						button1.setSelected(true);
 						panel.add(button1);
 						panel.add(button2);
+
 						boolean saisieValeur ; 
 						
 						if(button1.isSelected()){
@@ -111,10 +112,13 @@ public class FenSimulation extends JFrame {
 							saisieValeur = false ;
 						}
 
-						JOptionPane.showMessageDialog(null, panel);
+						showMessageDialog(null, panel);
+
+
 						Integer minIntervalle = Integer.valueOf(JOptionPane.showInputDialog("Intervalle min"));
 						Integer maxIntervalle = Integer.valueOf(JOptionPane.showInputDialog("Intervalle max"));
 						String intervalle = "[" + minIntervalle + " - " + maxIntervalle + "]";
+
 						Float valeur  ;
 						if (saisieValeur) {
 							do {
@@ -127,8 +131,7 @@ public class FenSimulation extends JFrame {
 						else{
 							valeur = (float) (( Math.random()*( maxIntervalle - minIntervalle + 1 ) ) + minIntervalle);
 						}
-						
-						
+
 						//
 						listeCapteurs.add(new Capteurs(id, type, loc, minIntervalle, maxIntervalle, gps, inte, saisieValeur, valeur));
 						
