@@ -15,7 +15,7 @@ public class Reseau {
     public Reseau() {
 
         try {
-            socket = new Socket(InetAddress.getLocalHost(), NUMERO_PORT);
+            socket = new Socket(InetAddress.getByName("127.0.0.1"),NUMERO_PORT);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {

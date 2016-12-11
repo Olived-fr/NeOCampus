@@ -89,6 +89,9 @@ public class FenSimulationSuiv extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				for(Capteurs capt : listeCapteurs) {
+					capt.deconnexionCapteur();
+				}
 				laFen.dispose();
 				fenPrec.setVisible(true);
 			}

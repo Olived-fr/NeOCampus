@@ -2,10 +2,7 @@ package capteurs;
 
 import reseau.Reseau;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.UnknownHostException;
 
 public class Capteurs {
@@ -80,9 +77,9 @@ public class Capteurs {
 
 		reseau = new Reseau();
 		BufferedReader reader = null;
-		PrintWriter printer = null;
+		PrintStream printer = null;
 		try {
-			printer = new PrintWriter(reseau.getSocket().getOutputStream());
+			printer = new PrintStream(reseau.getSocket().getOutputStream());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -94,15 +91,28 @@ public class Capteurs {
 
 		String chaineCapteur = null;
 		if (interieur != null)
-			chaineCapteur = "<"+id+">"+"<"+type+">"+"<"+interieur.getBatiment()+">"+"<"+interieur.getEtage()+">"+"<"+interieur.getSalle()+">"+"<"+interieur.getCommentaire()+">";
+			chaineCapteur = "ConnexionCapteur;"+id+";"+type+";"+interieur.getBatiment()+";"+interieur.getEtage()+";"+interieur.getSalle()+";"+interieur.getCommentaire();
 		else if (gps != null)
-			chaineCapteur = "<"+id+">"+"<"+type+">"+"<"+gps.getLatitude()+">"+"<"+gps.getLongitude()+">";
+			chaineCapteur = "ConnexionCapteur;"+id+";"+type+";"+gps.getLatitude()+";"+gps.getLongitude();
 
-		printer.print(chaineCapteur);
+		printer.println(chaineCapteur);
 		try {
 		System.out.println(reader.readLine());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void deconnexionCapteur() {
+
+		PrintStream printer = null;
+		try {
+			printer = new PrintStream(reseau.getSocket().getOutputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		printer.println("DeconnexionCapteur;"+id);
+		reseau.deconnexion();
 	}
 }
