@@ -5,15 +5,18 @@ import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.NumberFormat;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
 
 import capteurs.Capteurs;
@@ -28,7 +31,7 @@ public class FenSimulationSuiv extends JFrame {
 	JTextField tFrequence;
 	JButton bDeconnexion;
 	JButton tFrequenceButton ;
-	String champFrequence ;
+	Integer champFrequence = 0;
 	JFrame laFen, fenPrec;
 
 	public FenSimulationSuiv(String titre, JFrame prec, List<Capteurs> listeCapteurs) {
@@ -70,6 +73,7 @@ public class FenSimulationSuiv extends JFrame {
 		panelCenter.add(lFreq, BorderLayout.EAST);
 		
 		tFrequence = new JTextField(5);
+				
 		panelCenter.add(tFrequence, BorderLayout.CENTER);
 		
 		
@@ -101,9 +105,28 @@ public class FenSimulationSuiv extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				champFrequence = tFrequence.getText() ;	
+				try{
+					String text = tFrequence.getText();
+					champFrequence = Integer.parseInt(text) ;
+					ActionListener action = new ActionListener() {
+					      public void actionPerformed(ActionEvent evt) {
+					          System.out.println(java.util.Calendar.getInstance().getTime().toString());;		      
+					      }
+					  };
+					  //atention timer en miliseconde
+					  new Timer((champFrequence*1000), action).start();
+				}
+				catch(NumberFormatException E){
+					
+				}
 			}
 		});
+		
+		 
+		
+		  
+
+	
 		
 		
 	}
