@@ -8,17 +8,19 @@ public class Capteurs {
 	private int intervalleMin ; 
 	private int intervalleMax ;
 	private CoordGps gps ; 
-	private CoordInterieur interieur ; 
+	private CoordInterieur interieur ;
+	private boolean saisieValeur ; 
+	private float valeur ;
 	
 	public Capteurs(String id, EnumType type, String localisation, int intervalleMin, 
-			int intervalleMax, CoordGps gps, CoordInterieur interieur){
+			int intervalleMax, CoordGps gps, CoordInterieur interieur,boolean saisieValeur, float valeur){
 		this.id = id ;
 		this.type = type ; 
 		this.localisation = localisation ; 
 		this.intervalleMin = intervalleMin ; 
 		this.intervalleMax = intervalleMax ;
 		this.gps = gps ;
-		this.interieur = interieur ;
+		this.interieur = interieur ; 
 		
 	}
 
@@ -49,6 +51,20 @@ public class Capteurs {
 	public CoordInterieur getInterieur() {
 		return interieur;
 	}
+
+	public boolean isSaisieValeur() {
+		return saisieValeur;
+	}
+
+	public float getValeur() {
+		return valeur;
+	}
+
+	public void setValeur(float valeur) {
+		this.valeur = valeur;
+	}
+	
+
 	
 	
 	

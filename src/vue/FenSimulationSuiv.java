@@ -18,6 +18,7 @@ import javax.swing.table.DefaultTableModel;
 
 import capteurs.Capteurs;
 
+
 public class FenSimulationSuiv extends JFrame {
 	
 	JTable tListe;
@@ -50,7 +51,9 @@ public class FenSimulationSuiv extends JFrame {
 		dtm = new DefaultTableModel(nomsColonnes, 0);
 		for(Capteurs capt : listeCapteurs) {
 			// TODO Générer valeur aléatoire pour chaque capteur compris dans leur intervalle
-			int valGeneree = -1;
+
+			
+			float valGeneree = capt.getValeur();
 			
 			//Ajout ligne au tableau
 			dtm.addRow(new Object[] {capt.getId(), valGeneree, capt.getType()});
