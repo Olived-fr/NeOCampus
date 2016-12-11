@@ -52,6 +52,7 @@ public class FenSimulationSuiv extends JFrame {
 		for(Capteurs capt : listeCapteurs) {
 			// TODO Générer valeur aléatoire pour chaque capteur compris dans leur intervalle
 
+			System.out.println("valeuuuurr : " + capt.getValeur());
 			
 			float valGeneree = capt.getValeur();
 			

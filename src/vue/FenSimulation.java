@@ -103,6 +103,13 @@ public class FenSimulation extends JFrame {
 						panel.add(button1);
 						panel.add(button2);
 
+						showMessageDialog(null, panel);
+
+
+						Integer minIntervalle = Integer.valueOf(JOptionPane.showInputDialog("Intervalle min"));
+						Integer maxIntervalle = Integer.valueOf(JOptionPane.showInputDialog("Intervalle max"));
+						String intervalle = "[" + minIntervalle + " - " + maxIntervalle + "]";
+
 						boolean saisieValeur ; 
 						
 						if(button1.isSelected()){
@@ -111,15 +118,9 @@ public class FenSimulation extends JFrame {
 						else{
 							saisieValeur = false ;
 						}
-
-						showMessageDialog(null, panel);
-
-
-						Integer minIntervalle = Integer.valueOf(JOptionPane.showInputDialog("Intervalle min"));
-						Integer maxIntervalle = Integer.valueOf(JOptionPane.showInputDialog("Intervalle max"));
-						String intervalle = "[" + minIntervalle + " - " + maxIntervalle + "]";
-
+						
 						Float valeur  ;
+						
 						if (saisieValeur) {
 							do {
 								valeur = Float.valueOf(JOptionPane.showInputDialog("Valeur du capteur"));
@@ -132,6 +133,8 @@ public class FenSimulation extends JFrame {
 							valeur = (float) (( Math.random()*( maxIntervalle - minIntervalle + 1 ) ) + minIntervalle);
 						}
 
+						System.out.println("heeeee valeur ici : " + valeur);
+						
 						//
 						listeCapteurs.add(new Capteurs(id, type, loc, minIntervalle, maxIntervalle, gps, inte, saisieValeur, valeur));
 						
