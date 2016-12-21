@@ -14,15 +14,18 @@ public class Visualisation {
 
         String chaineCapteur = null;
 
+        //******* Test ********/
         //do {
            // chaineCapteur = reseau.receptionMessage();
         chaineCapteur = "CapteurPresent;Identifiant1;TypeDuCapteur;Bâtiment;Etage;Salle;PositionRelative";
         traitement(chaineCapteur);
         chaineCapteur = "ValeurCapteur;Identifiant1;12";
         traitement(chaineCapteur);
+        chaineCapteur = "ValeurCapteur;Identifiant1;122";
+        traitement(chaineCapteur);
 
        // } while(true);
-
+        /*************************/
 
     }
 
@@ -44,10 +47,9 @@ public class Visualisation {
             case "ValeurCapteur":
                 id = (String) Tok.nextElement();
                 try {
-                    String chaine = (String)Tok.nextElement() + " " + date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+"\n";
-                    System.out.println(chaine);
-                    FileWriter fw = new FileWriter(id+".txt", true);
-                    fw.write(chaine);
+                    String chaine = (String)Tok.nextElement() + " " + date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+                    PrintStream printer = new PrintStream(new FileOutputStream(id+".txt", true));
+                    printer.println(chaine);
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }

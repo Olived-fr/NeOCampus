@@ -14,6 +14,8 @@ public class Fichier {
             Tok.nextElement();
             String id = (String)Tok.nextElement();
             File f = new File(id+".txt");
+            if(f.exists())
+                f.delete();
             f.createNewFile();
         } catch (IOException e) {
             e.printStackTrace();
