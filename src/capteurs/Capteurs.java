@@ -80,15 +80,9 @@ public class Capteurs {
 	public void connexionCapteur() {
 
 		reseau = new Reseau();
-		BufferedReader reader = null;
 		PrintStream printer = null;
 		try {
 			printer = new PrintStream(reseau.getSocket().getOutputStream());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		try {
-			reader = new BufferedReader(new InputStreamReader(reseau.getSocket().getInputStream()));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

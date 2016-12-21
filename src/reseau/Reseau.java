@@ -1,6 +1,9 @@
 package reseau;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -32,6 +35,47 @@ public class Reseau {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String receptionMessage() {
+        BufferedReader reader = null;
+        String chaineCapteur = null;
+
+        try {
+            reader = new BufferedReader(new InputStreamReader(this.getSocket().getInputStream()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            chaineCapteur = reader.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return chaineCapteur;
+    }
+
+    public void inscriptionCapteur(String chaineCapteur) {
+        PrintStream printer = null;
+        try {
+            printer = new PrintStream(this.getSocket().getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        printer.println("InscriptionCapteur;"+chaineCapteur);
+    }
+
+    public void desinscriptionCapteur(String chaineCapteur) {
+        PrintStream printer = null;
+        try {
+            printer = new PrintStream(this.getSocket().getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        printer.println("DesinscriptionCapteur;"+chaineCapteur);
     }
 
     public Socket getSocket() {
