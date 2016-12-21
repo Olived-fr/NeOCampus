@@ -1,6 +1,6 @@
 import vue.FenSimulation;
 
-public class Main {
+public class Simulation {
 
 	public static void main(String[] args) {
 		
