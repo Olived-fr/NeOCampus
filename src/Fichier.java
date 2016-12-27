@@ -1,24 +1,28 @@
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.StringTokenizer;
 
-/**
- * Created by Olivier DUFOUR on 21/12/2016.
- */
+
 public class Fichier {
 
-    public Fichier (String chaineCapteur) {
+    public Fichier() {
         try {
-            StringTokenizer Tok = new StringTokenizer(chaineCapteur,";");
-            Tok.nextElement();
-            String id = (String)Tok.nextElement();
-            File f = new File(id+".txt");
-            if(f.exists())
+            File f = new File("config.txt");
+            if (f.exists())
                 f.delete();
             f.createNewFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+
+    public void ajoutChaine(String infos) {
+        try {
+            PrintStream printer = new PrintStream(new FileOutputStream("config.txt", true));
+            printer.println(infos);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 }
+

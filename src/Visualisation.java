@@ -1,6 +1,7 @@
 import reseau.Reseau;
 
 import java.io.*;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.StringTokenizer;
 
@@ -8,11 +9,13 @@ public class Visualisation {
 
     public static Date date = new Date();
     //Reseau reseau = new Reseau();
+    public static Fichier fichier = new Fichier();
 
     /* Main Interface de Visualisation */
     public static void main(String[] args) {
 
         String chaineCapteur = null;
+
 
         //******* Test ********/
         //do {
@@ -21,7 +24,9 @@ public class Visualisation {
         traitement(chaineCapteur);
         chaineCapteur = "ValeurCapteur;Identifiant1;12";
         traitement(chaineCapteur);
-        chaineCapteur = "ValeurCapteur;Identifiant1;122";
+        chaineCapteur = "CapteurPresent;Identifiant2;TypeDuCapteur;Bâtiment;Etage;Salle;PositionRelative";
+        traitement(chaineCapteur);
+        chaineCapteur = "ValeurCapteur;Identifiant2;122";
         traitement(chaineCapteur);
 
        // } while(true);
@@ -31,12 +36,16 @@ public class Visualisation {
 
     public static void traitement(String chaineCapteur) {
         StringTokenizer Tok = new StringTokenizer(chaineCapteur,";");
-        String id = (String)Tok.nextElement();
+        String type = (String)Tok.nextElement();
 
-        switch(id) {
+        switch(type) {
 
             case "CapteurPresent":
-                Fichier fichier = new Fichier(chaineCapteur);
+                String infos ="//";
+                while (Tok.hasMoreElements()) {
+                    infos = infos + (String)Tok.nextElement() + ";";
+                }
+                fichier.ajoutChaine(infos);
                 break;
 
             case "InscriptionCapteurKO":
@@ -45,14 +54,12 @@ public class Visualisation {
                 break;
 
             case "ValeurCapteur":
-                id = (String) Tok.nextElement();
-                try {
-                    String chaine = (String)Tok.nextElement() + " " + date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
-                    PrintStream printer = new PrintStream(new FileOutputStream(id+".txt", true));
-                    printer.println(chaine);
-                } catch (IOException ex) {
-                    ex.printStackTrace();
+                String val ="--";
+                while (Tok.hasMoreElements()) {
+                    val = val + (String)Tok.nextElement() + ";";
                 }
+                val =  val + date;
+                fichier.ajoutChaine(val);
                 break;
 
             default:
