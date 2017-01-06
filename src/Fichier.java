@@ -4,9 +4,12 @@ import java.util.StringTokenizer;
 
 public class Fichier {
 
-    public Fichier() {
+    public void nouveauFichier(String chaineCapteur) {
         try {
-            File f = new File("config.txt");
+            StringTokenizer Tok = new StringTokenizer(chaineCapteur,";");
+            Tok.nextElement();
+            String id = (String)Tok.nextElement();
+            File f = new File(id+".txt");
             if (f.exists())
                 f.delete();
             f.createNewFile();
@@ -16,9 +19,9 @@ public class Fichier {
     }
 
 
-    public void ajoutChaine(String infos) {
+    public void ajoutChaine(String name, String infos) {
         try {
-            PrintStream printer = new PrintStream(new FileOutputStream("config.txt", true));
+            PrintStream printer = new PrintStream(new FileOutputStream(name+".txt", true));
             printer.println(infos);
         } catch (IOException ex) {
             ex.printStackTrace();

@@ -8,8 +8,8 @@ import java.util.StringTokenizer;
 public class Visualisation {
 
     public static Date date = new Date();
-    //Reseau reseau = new Reseau();
     public static Fichier fichier = new Fichier();
+    //Reseau reseau = new Reseau();
 
     /* Main Interface de Visualisation */
     public static void main(String[] args) {
@@ -37,15 +37,17 @@ public class Visualisation {
     public static void traitement(String chaineCapteur) {
         StringTokenizer Tok = new StringTokenizer(chaineCapteur,";");
         String type = (String)Tok.nextElement();
+        String name = (String)Tok.nextElement();
 
         switch(type) {
 
             case "CapteurPresent":
+                fichier.nouveauFichier(chaineCapteur);
                 String infos ="//";
                 while (Tok.hasMoreElements()) {
                     infos = infos + (String)Tok.nextElement() + ";";
                 }
-                fichier.ajoutChaine(infos);
+                fichier.ajoutChaine(name,infos);
                 break;
 
             case "InscriptionCapteurKO":
@@ -58,8 +60,8 @@ public class Visualisation {
                 while (Tok.hasMoreElements()) {
                     val = val + (String)Tok.nextElement() + ";";
                 }
-                val =  val + date;
-                fichier.ajoutChaine(val);
+                val =  val + date + ";";
+                fichier.ajoutChaine(name,val);
                 break;
 
             default:
