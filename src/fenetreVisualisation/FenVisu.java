@@ -35,7 +35,7 @@ public class FenVisu extends JFrame {
 	JTextField tIntervalleMin, tIntervalleMax;
 	JTable tListCapt;
 	DefaultTableModel dtm;
-	public static Reseau reseau = new Reseau(2);
+	public static Reseau reseau = new Reseau();
 	public static Date date = new Date();
 	public static Fichier fichier = new Fichier();
 	
