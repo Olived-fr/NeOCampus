@@ -1,4 +1,4 @@
-package vue;
+package fenetreSimulation;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;

@@ -1,3 +1,4 @@
+import fenetreVisualisation.FenVisu;
 import reseau.Reseau;
 
 import java.io.*;
@@ -9,12 +10,14 @@ public class Visualisation {
 
     public static Date date = new Date();
     public static Fichier fichier = new Fichier();
-    //Reseau reseau = new Reseau();
+    Reseau reseau = new Reseau();
 
     /* Main Interface de Visualisation */
     public static void main(String[] args) {
 
         String chaineCapteur = null;
+        FenVisu fenVisu = new FenVisu("Fenêtre de visualisation");
+        fenVisu.setVisible(true);
 
 
         //******* Test ********/

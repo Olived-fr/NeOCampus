@@ -1,4 +1,4 @@
-package vue;
+package fenetreSimulation;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;

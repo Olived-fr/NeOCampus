@@ -1,4 +1,4 @@
-import vue.FenSimulation;
+import fenetreSimulation.FenSimulation;
 
 public class Simulation {
 
