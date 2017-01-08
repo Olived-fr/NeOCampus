@@ -1,12 +1,18 @@
 
 package fenetreVisualisation;
 
+import reseau.Reseau;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.Date;
+import java.util.StringTokenizer;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -29,6 +35,9 @@ public class FenVisu extends JFrame {
 	JTextField tIntervalleMin, tIntervalleMax;
 	JTable tListCapt;
 	DefaultTableModel dtm;
+	public static Reseau reseau = new Reseau(2);
+	public static Date date = new Date();
+	public static Fichier fichier = new Fichier();
 	
 	public FenVisu(String titre) {
 		super(titre);
@@ -119,6 +128,12 @@ public class FenVisu extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				bDeconnexion.setEnabled(true);
 				bConnexion.setEnabled(false);
+				reseau.connexionVisu();
+				String chaineCapteur = "";
+				do {
+					chaineCapteur = reseau.receptionMessage();
+					traitement(chaineCapteur);
+				} while(!reseau.getSocket().isClosed());
 			}
 		});
 		
@@ -128,8 +143,54 @@ public class FenVisu extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				bConnexion.setEnabled(true);
 				bDeconnexion.setEnabled(false);
+				reseau.deconnexionVisu();
+			}
+		});
+
+		addWindowListener(new WindowAdapter()
+		{
+			@Override
+			public void windowClosing(WindowEvent e)
+			{
+				reseau.deconnexion();
+				e.getWindow().dispose();
 			}
 		});
 		
+	}
+
+	public static void traitement(String chaineCapteur) {
+		StringTokenizer Tok = new StringTokenizer(chaineCapteur,";");
+		String type = (String)Tok.nextElement();
+		String name = (String)Tok.nextElement();
+
+		switch(type) {
+
+			case "CapteurPresent":
+				fichier.nouveauFichier(chaineCapteur);
+				String infos ="//";
+				while (Tok.hasMoreElements()) {
+					infos = infos + (String)Tok.nextElement() + ";";
+				}
+				fichier.ajoutChaine(name,infos);
+				break;
+
+			case "InscriptionCapteurKO":
+			case "DesinscriptionCapteurKO":
+			case "CapteurDeco":
+				break;
+
+			case "ValeurCapteur":
+				String val ="--";
+				while (Tok.hasMoreElements()) {
+					val = val + (String)Tok.nextElement() + ";";
+				}
+				val =  val + date + ";";
+				fichier.ajoutChaine(name,val);
+				break;
+
+			default:
+				break;
+		}
 	}
 }

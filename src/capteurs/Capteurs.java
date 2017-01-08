@@ -79,7 +79,7 @@ public class Capteurs {
 
 	public void connexionCapteur() {
 
-		reseau = new Reseau();
+		reseau = new Reseau(1);
 		PrintStream printer = null;
 		try {
 			printer = new PrintStream(reseau.getSocket().getOutputStream());

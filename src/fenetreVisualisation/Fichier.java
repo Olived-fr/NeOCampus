@@ -1,3 +1,5 @@
+package fenetreVisualisation;
+
 import java.io.*;
 import java.util.StringTokenizer;
 

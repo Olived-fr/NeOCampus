@@ -8,22 +8,51 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Random;
 
 
 public class Reseau {
 
-    private final static int NUMERO_PORT = 7888;
+    private final static int NUMERO_PORT_SIMU = 7888;
+    private final static int NUMERO_PORT_VISU = 7889;
     private Socket socket = null;
 
-    public Reseau() {
+    public Reseau(int num) {
 
         try {
-            socket = new Socket(InetAddress.getByName("127.0.0.1"),NUMERO_PORT);
+            if (num ==1)
+            socket = new Socket(InetAddress.getByName("127.0.0.1"),NUMERO_PORT_SIMU);
+            else if (num == 2)
+                socket = new Socket(InetAddress.getByName("127.0.0.1"),NUMERO_PORT_VISU);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void connexionVisu() {
+        PrintStream printer = null;
+        try {
+            printer = new PrintStream(this.getSocket().getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Random rand = new Random();
+        String chaineCapteur = null;
+        chaineCapteur = "ConnexionVisu;"+rand.nextInt(Integer.MAX_VALUE)+1;
+        printer.println(chaineCapteur);
+    }
+
+    public void deconnexionVisu() {
+        PrintStream printer = null;
+        try {
+            printer = new PrintStream(this.getSocket().getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        printer.println("DeconnexionVisu");
     }
 
     public void deconnexion() {
