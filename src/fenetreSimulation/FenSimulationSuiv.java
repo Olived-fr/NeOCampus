@@ -24,6 +24,7 @@ import javax.swing.table.DefaultTableModel;
 import capteurs.Capteurs;
 
 import static com.sun.tools.doclint.Entity.and;
+import static java.awt.SystemColor.text;
 
 
 public class FenSimulationSuiv extends JFrame {
@@ -123,6 +124,7 @@ public class FenSimulationSuiv extends JFrame {
 										  cpt.setValeur(val);
 										  dtm.setValueAt(cpt.getValeur(), listeCapteurs.indexOf(cpt), 1);
 									  }
+									  if (text != "")
 									  cpt.transmissionValeur();
 								  }
 							  }

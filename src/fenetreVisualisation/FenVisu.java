@@ -164,8 +164,8 @@ public class FenVisu extends JFrame {
 	}
 
 	public static void traitement(String chaineCapteur) {
-		System.out.println(chaineCapteur);
-		if (!(chaineCapteur.equals("ConnexionOK") || chaineCapteur.equals("ConnexionKO") || chaineCapteur.equals("DeconnexionOK") || chaineCapteur.equals("DeconnexionKO"))) {
+		System.out.println("chaineCapteur="+chaineCapteur);
+		if (!(chaineCapteur.equals("ConnexionOK") || chaineCapteur.equals("ConnexionKO") || chaineCapteur.equals("DeconnexionOK") || chaineCapteur.equals("DeconnexionKO") || chaineCapteur.equals("InscriptionCapteurOK"))) {
 			StringTokenizer Tok = new StringTokenizer(chaineCapteur, ";");
 			String type = (String) Tok.nextElement();
 			String name = (String) Tok.nextElement();
@@ -179,6 +179,7 @@ public class FenVisu extends JFrame {
 						infos = infos + (String) Tok.nextElement() + ";";
 					}
 					fichier.ajoutChaine(name, infos);
+					reseau.inscriptionCapteur(name);
 					break;
 
 				case "InscriptionCapteurKO":
@@ -199,5 +200,6 @@ public class FenVisu extends JFrame {
 					break;
 			}
 		}
+		System.out.println("fin");
 	}
 }
