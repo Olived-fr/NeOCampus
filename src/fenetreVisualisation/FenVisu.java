@@ -26,6 +26,8 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
+import static sun.jvm.hotspot.runtime.PerfMemory.start;
+
 public class FenVisu extends JFrame {
 	
 	JPanel pTop, pMid, pMid1, pMid2, pBot, pBot1, pBot2;
@@ -38,6 +40,8 @@ public class FenVisu extends JFrame {
 	public static Reseau reseau = new Reseau();
 	public static Date date = new Date();
 	public static Fichier fichier = new Fichier();
+	public static Runnable tache = new TacheThread();
+	public static Thread thread = new Thread(tache);
 	
 	public FenVisu(String titre) {
 		super(titre);
@@ -129,11 +133,9 @@ public class FenVisu extends JFrame {
 				bDeconnexion.setEnabled(true);
 				bConnexion.setEnabled(false);
 				reseau.connexionVisu();
-				String chaineCapteur = "";
-				do {
-					chaineCapteur = reseau.receptionMessage();
-					traitement(chaineCapteur);
-				} while(!reseau.getSocket().isClosed());
+				if (thread.getState() == Thread.State.TERMINATED)
+					thread = new Thread(tache);
+				thread.start();
 			}
 		});
 		
@@ -143,6 +145,7 @@ public class FenVisu extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				bConnexion.setEnabled(true);
 				bDeconnexion.setEnabled(false);
+				thread.stop();
 				reseau.deconnexionVisu();
 			}
 		});
@@ -152,7 +155,8 @@ public class FenVisu extends JFrame {
 			@Override
 			public void windowClosing(WindowEvent e)
 			{
-				reseau.deconnexion();
+				thread.stop();
+				reseau.deconnexionVisu();
 				e.getWindow().dispose();
 			}
 		});
@@ -160,37 +164,40 @@ public class FenVisu extends JFrame {
 	}
 
 	public static void traitement(String chaineCapteur) {
-		StringTokenizer Tok = new StringTokenizer(chaineCapteur,";");
-		String type = (String)Tok.nextElement();
-		String name = (String)Tok.nextElement();
+		System.out.println(chaineCapteur);
+		if (!(chaineCapteur.equals("ConnexionOK") || chaineCapteur.equals("ConnexionKO") || chaineCapteur.equals("DeconnexionOK") || chaineCapteur.equals("DeconnexionKO"))) {
+			StringTokenizer Tok = new StringTokenizer(chaineCapteur, ";");
+			String type = (String) Tok.nextElement();
+			String name = (String) Tok.nextElement();
 
-		switch(type) {
+			switch (type) {
 
-			case "CapteurPresent":
-				fichier.nouveauFichier(chaineCapteur);
-				String infos ="//";
-				while (Tok.hasMoreElements()) {
-					infos = infos + (String)Tok.nextElement() + ";";
-				}
-				fichier.ajoutChaine(name,infos);
-				break;
+				case "CapteurPresent":
+					fichier.nouveauFichier(chaineCapteur);
+					String infos = "//";
+					while (Tok.hasMoreElements()) {
+						infos = infos + (String) Tok.nextElement() + ";";
+					}
+					fichier.ajoutChaine(name, infos);
+					break;
 
-			case "InscriptionCapteurKO":
-			case "DesinscriptionCapteurKO":
-			case "CapteurDeco":
-				break;
+				case "InscriptionCapteurKO":
+				case "DesinscriptionCapteurKO":
+				case "CapteurDeco":
+					break;
 
-			case "ValeurCapteur":
-				String val ="--";
-				while (Tok.hasMoreElements()) {
-					val = val + (String)Tok.nextElement() + ";";
-				}
-				val =  val + date + ";";
-				fichier.ajoutChaine(name,val);
-				break;
+				case "ValeurCapteur":
+					String val = "--";
+					while (Tok.hasMoreElements()) {
+						val = val + (String) Tok.nextElement() + ";";
+					}
+					val = val + date + ";";
+					fichier.ajoutChaine(name, val);
+					break;
 
-			default:
-				break;
+				default:
+					break;
+			}
 		}
 	}
 }

@@ -1,5 +1,7 @@
 package reseau;
 
+import fenetreVisualisation.FenVisu;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -31,6 +33,9 @@ public class Reseau {
     public void connexionVisu() {
         PrintStream printer = null;
         try {
+            if (this.getSocket().isClosed()) {
+                socket = new Socket(InetAddress.getByName("127.0.0.1"),NUMERO_PORT);
+            }
             printer = new PrintStream(this.getSocket().getOutputStream());
         } catch (IOException e) {
             e.printStackTrace();
@@ -50,6 +55,7 @@ public class Reseau {
             e.printStackTrace();
         }
         printer.println("DeconnexionVisu");
+        deconnexion();
     }
 
     public void deconnexion() {
@@ -66,19 +72,19 @@ public class Reseau {
     public String receptionMessage() {
         BufferedReader reader = null;
         String chaineCapteur = null;
+        if (!FenVisu.reseau.getSocket().isClosed()) {
+            try {
+                reader = new BufferedReader(new InputStreamReader(this.getSocket().getInputStream()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
-        try {
-            reader = new BufferedReader(new InputStreamReader(this.getSocket().getInputStream()));
-        } catch (IOException e) {
-            e.printStackTrace();
+            try {
+                chaineCapteur = reader.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-
-        try {
-            chaineCapteur = reader.readLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         return chaineCapteur;
     }
 
