@@ -21,6 +21,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -51,7 +52,8 @@ public class FenVisu extends JFrame {
 	private JPanel pTop, pMid, pMid1, pMid2, pBot, pBot1, pBot2;
 	private JButton bChargerCapt, bConnexion, bDeconnexion, bValiderContrainte, bSuppContrainte;
 	private JComboBox<EnumType> cbFiltreTypeMesure, cbContrainteTypeMesure;
-	private JList<EnumType> listContraintes;
+	private JList<String> listContraintes;
+	private DefaultListModel<String> dlm;
 	private JTextField tIntervalleMin, tIntervalleMax;
 	private JTable tListCapt;
 	private DefaultTableModel dtm;
@@ -146,8 +148,8 @@ public class FenVisu extends JFrame {
 		pBot1.add(tIntervalleMax);
 		pBot1.add(bValiderContrainte);
 		
-		
-		listContraintes = new JList<>();
+		dlm = new DefaultListModel<>();
+		listContraintes = new JList<>(dlm);
 		listContraintes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		JScrollPane listScroll = new JScrollPane(listContraintes);
 		listScroll.setPreferredSize(new Dimension(250, 70));
@@ -187,6 +189,30 @@ public class FenVisu extends JFrame {
 				bDeconnexion.setEnabled(false);
 				thread.stop();
 				reseau.deconnexionVisu();
+			}
+		});
+		
+		bValiderContrainte.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				EnumType type = (EnumType) cbContrainteTypeMesure.getSelectedItem();
+				float intMin = Float.valueOf(tIntervalleMin.getText());
+				float intMax = Float.valueOf(tIntervalleMax.getText());
+				
+				dlm.addElement(type.toString() + "  |  [" + intMin + "-" + intMax + "]");
+			}
+		});
+		
+		bSuppContrainte.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int index = listContraintes.getSelectedIndex();
+				
+				if(index != -1) {
+					dlm.remove(index);
+				}
 			}
 		});
 
