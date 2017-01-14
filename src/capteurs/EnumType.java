@@ -12,4 +12,15 @@ public enum EnumType {
 	public String getType(){
 		return this.type ;
 	}
+	
+	public static String[] noms() {
+		EnumType[] types = values();
+		String[] noms = new String[types.length];
+		
+		for(int i = 0; i < types.length; i++) {
+			noms[i] = types[i].name();
+		}
+		
+		return noms;
+	}
 }

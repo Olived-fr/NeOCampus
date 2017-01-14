@@ -29,6 +29,12 @@ public class CoordInterieur {
 	public String getCommentaire() {
 		return commentaire;
 	}
+
+	@Override
+	public String toString() {
+		return "<" + batiment + ", " + etage + ", " + salle + ", "
+				+ commentaire + ">";
+	}
 	
 	
 }

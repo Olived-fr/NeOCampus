@@ -33,9 +33,12 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -51,7 +54,8 @@ public class FenVisu extends JFrame {
 	
 	private JPanel pTop, pMid, pMid1, pMid2, pBot, pBot1, pBot2;
 	private JButton bChargerCapt, bConnexion, bDeconnexion, bValiderContrainte, bSuppContrainte;
-	private JComboBox<EnumType> cbFiltreTypeMesure, cbContrainteTypeMesure;
+	private JComboBox<EnumType> cbContrainteTypeMesure;
+	private JComboBox<String> cbFiltreTypeMesure;
 	private JList<String> listContraintes;
 	private DefaultListModel<String> dlm;
 	private JTextField tIntervalleMin, tIntervalleMax;
@@ -108,9 +112,11 @@ public class FenVisu extends JFrame {
 		
 		pMid1.add(treeScroll);
 		
-		EnumType enu = EnumType.EAUCHAUDE;
-		EnumType[] typesMesures = enu.getDeclaringClass().getEnumConstants();
-		cbFiltreTypeMesure = new JComboBox<>(typesMesures);
+		
+		String[] types = EnumType.noms();
+		cbFiltreTypeMesure = new JComboBox<>(types);
+		cbFiltreTypeMesure.insertItemAt("--", 0);
+		cbFiltreTypeMesure.setSelectedIndex(0);
 		String[] nomsColonnes = {"Identifiant",
 								"Type de mesure",
 								"Localisation",
@@ -134,6 +140,8 @@ public class FenVisu extends JFrame {
 		
 		
 		// BOTTOM
+		EnumType enu = EnumType.EAUCHAUDE;
+		EnumType[] typesMesures = enu.getDeclaringClass().getEnumConstants();
 		cbContrainteTypeMesure = new JComboBox<>(typesMesures);
 		tIntervalleMin = new JTextField(4);
 		tIntervalleMax = new JTextField(4);
@@ -213,6 +221,63 @@ public class FenVisu extends JFrame {
 				if(index != -1) {
 					dlm.remove(index);
 				}
+			}
+		});
+		
+		tree.addTreeSelectionListener(new TreeSelectionListener() {
+			
+			@Override
+			public void valueChanged(TreeSelectionEvent e) {
+				DefaultMutableTreeNode node =  (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+				
+				if(node == null)
+					return;
+				
+				if(dtm.getRowCount() > 0) {
+					for (int i = dtm.getRowCount()-1; i > -1; i--) {
+						dtm.removeRow(i);
+					}
+				}
+				
+				String nodeNom = node.getUserObject().toString();
+				TreeNode[] nodes = node.getPath();
+				if(nodeNom.equalsIgnoreCase("capteurs")) {
+					for (Capteurs capteurs : captExt) {
+						dtm.addRow(new Object[] {capteurs.getId(), capteurs.getType(), capteurs.getGps()});
+					}
+					
+					for (Capteurs capteurs : captInt) {
+						dtm.addRow(new Object[] {capteurs.getId(), capteurs.getType(), capteurs.getInterieur()});
+					}
+				} else if(nodes[1].toString().equalsIgnoreCase("exterieur")) {
+					boolean captSelect = nodeNom.equalsIgnoreCase(nodes[1].toString());
+					for (Capteurs capteurs : captExt) {
+						if(captSelect || capteurs.getId().equalsIgnoreCase(nodeNom)) {
+							dtm.addRow(new Object[] {capteurs.getId(), capteurs.getType(), capteurs.getGps()});
+						}
+							
+					}
+				} else if(nodes[1].toString().equalsIgnoreCase("interieur")) {
+					int profondeur = nodes.length;
+					
+					for (Capteurs capteurs : captInt) {
+						CoordInterieur interieur = capteurs.getInterieur();
+						if(profondeur == 2 || (profondeur == 3 && interieur.getBatiment().equalsIgnoreCase(nodeNom))
+								|| (profondeur == 4 && interieur.getBatiment().equalsIgnoreCase(nodes[2].toString()) 
+													&& interieur.getEtage().equalsIgnoreCase(nodeNom))
+								|| (profondeur == 5 && interieur.getBatiment().equalsIgnoreCase(nodes[2].toString())
+													&& interieur.getEtage().equalsIgnoreCase(nodes[3].toString())
+													&& interieur.getSalle().equalsIgnoreCase(nodeNom))
+								|| (profondeur == 6 && interieur.getBatiment().equalsIgnoreCase(nodes[2].toString())
+													&& interieur.getEtage().equalsIgnoreCase(nodes[3].toString())
+													&& interieur.getSalle().equalsIgnoreCase(nodes[4].toString())
+													&& capteurs.getId().equalsIgnoreCase(nodeNom))) {
+							dtm.addRow(new Object[] {capteurs.getId(), capteurs.getType(), capteurs.getInterieur()});
+						}
+						
+					}
+				}
+				
 			}
 		});
 
