@@ -15,11 +15,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -63,7 +60,6 @@ public class FenVisu extends JFrame {
 	private JTree tree;
 	
 	public static Reseau reseau;
-	public static Date date = new Date();
 	public static Fichier fichier = new Fichier();
 	public static Runnable tache = new TacheThread();
 	public static Thread thread = new Thread(tache);
@@ -299,7 +295,6 @@ public class FenVisu extends JFrame {
 	
 
 	public static void traitement(String chaineCapteur) {
-		System.out.println("chaineCapteur="+chaineCapteur);
 		if (!(chaineCapteur.equals("ConnexionOK") || chaineCapteur.equals("ConnexionKO") || chaineCapteur.equals("DeconnexionOK") || chaineCapteur.equals("DeconnexionKO") || chaineCapteur.equals("InscriptionCapteurOK"))) {
 			StringTokenizer Tok = new StringTokenizer(chaineCapteur, ";");
 			String type = (String) Tok.nextElement();
@@ -327,7 +322,8 @@ public class FenVisu extends JFrame {
 					while (Tok.hasMoreElements()) {
 						val = val + (String) Tok.nextElement() + ";";
 					}
-					val = val + date + ";";
+					String timeStamp = new SimpleDateFormat("yyyy MM dd HH mm ss").format(Calendar.getInstance().getTime());
+					val = val + timeStamp + ";";
 					fichier.ajoutChaine(name, val);
 					break;
 
@@ -335,7 +331,6 @@ public class FenVisu extends JFrame {
 					break;
 			}
 		}
-		System.out.println("fin");
 	}
 	
 	private void construireArbre() {
