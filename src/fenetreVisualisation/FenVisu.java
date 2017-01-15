@@ -48,7 +48,6 @@ import capteurs.CoordInterieur;
 import capteurs.EnumType;
 import reseau.Reseau;
 
-//import static sun.jvm.hotspot.runtime.PerfMemory.start;
 
 public class FenVisu extends JFrame {
 	
@@ -63,7 +62,7 @@ public class FenVisu extends JFrame {
 	private DefaultTableModel dtm;
 	private JTree tree;
 	
-	public static Reseau reseau = new Reseau();
+	public static Reseau reseau;
 	public static Date date = new Date();
 	public static Fichier fichier = new Fichier();
 	public static Runnable tache = new TacheThread();
@@ -182,10 +181,13 @@ public class FenVisu extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				bDeconnexion.setEnabled(true);
 				bConnexion.setEnabled(false);
-				reseau.connexionVisu();
-				if (thread.getState() == Thread.State.TERMINATED)
-					thread = new Thread(tache);
-				thread.start();
+				reseau = new Reseau();
+				if (reseau.getSocket() != null) {
+					reseau.connexionVisu();
+					if (thread.getState() == Thread.State.TERMINATED)
+						thread = new Thread(tache);
+					thread.start();
+				}
 			}
 		});
 		
@@ -287,7 +289,8 @@ public class FenVisu extends JFrame {
 			public void windowClosing(WindowEvent e)
 			{
 				thread.stop();
-				reseau.deconnexionVisu();
+				if (reseau != null && reseau.getSocket() != null)
+					reseau.deconnexionVisu();
 				e.getWindow().dispose();
 			}
 		});
