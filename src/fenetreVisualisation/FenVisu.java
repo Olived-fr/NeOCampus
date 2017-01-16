@@ -15,18 +15,7 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.JTree;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableModel;
@@ -55,6 +44,7 @@ public class FenVisu extends JFrame {
 	private JTable tListCapt;
 	private static DefaultTableModel dtm;
 	private JTree tree;
+	private final JFileChooser fc = new JFileChooser();
 	
 	public static Reseau reseau;
 	public static Fichier fichier = new Fichier();
@@ -98,6 +88,7 @@ public class FenVisu extends JFrame {
 		treeScroll.setPreferredSize(new Dimension(400, 170));
 
 		bRechargerArbre = new JButton("Recharger");
+		bRechargerArbre.setEnabled(false);
 		
 		pMid1.add(treeScroll);
 		pMid1.add(bRechargerArbre);
@@ -167,11 +158,25 @@ public class FenVisu extends JFrame {
 		
 		
 		// Evenements
+		bChargerCapt.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int valRetour = fc.showOpenDialog(FenVisu.this);
+
+				if(valRetour == JFileChooser.APPROVE_OPTION) {
+					File fichier = fc.getSelectedFile();
+					creerListesCapteursDepuisFichier(false, fichier);
+					construireArbre();
+				}
+			}
+		});
+
 		bConnexion.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				bDeconnexion.setEnabled(true);
+				bRechargerArbre.setEnabled(true);
 				bConnexion.setEnabled(false);
 				reseau = new Reseau();
 				if (reseau.getSocket() != null) {
@@ -180,7 +185,7 @@ public class FenVisu extends JFrame {
 						thread = new Thread(tache);
 					thread.start();
 
-					creerListesCapteursDepuisFichier();
+					creerListesCapteursDepuisFichier(true, null);
 					construireArbre();
 				}
 			}
@@ -192,6 +197,7 @@ public class FenVisu extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				bConnexion.setEnabled(true);
 				bDeconnexion.setEnabled(false);
+				bRechargerArbre.setEnabled(false);
 				thread.stop();
 				reseau.deconnexionVisu();
 			}
@@ -242,7 +248,7 @@ public class FenVisu extends JFrame {
 		bRechargerArbre.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				creerListesCapteursDepuisFichier();
+				creerListesCapteursDepuisFichier(true, null);
 				construireArbre();
 			}
 		});
@@ -365,11 +371,24 @@ public class FenVisu extends JFrame {
 		return enfant;
 	}
 	
-	private void creerListesCapteursDepuisFichier() {
-		File dossier = new File(".");
-		File[] listeFichiers = dossier.listFiles();
-		captExt.clear();
-		captInt.clear();
+	private void creerListesCapteursDepuisFichier(boolean connecte, File fic) {
+		File dossier;
+		File[] listeFichiers;
+
+		if(fic == null) {
+			dossier = new File(".");
+			listeFichiers = dossier.listFiles();
+		} else {
+			File[] tmp = new File[1];
+			tmp[0] = fic;
+			listeFichiers = tmp;
+		}
+
+		if(connecte) {
+			captExt.clear();
+			captInt.clear();
+		}
+
 		
 		for (int i = 0; i < listeFichiers.length; i++) {
 			File fichier = listeFichiers[i];
