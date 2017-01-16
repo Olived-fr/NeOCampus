@@ -46,18 +46,18 @@ import reseau.Reseau;
 public class FenVisu extends JFrame {
 	
 	private JPanel pTop, pMid, pMid1, pMid2, pBot, pBot1, pBot2;
-	private JButton bChargerCapt, bConnexion, bDeconnexion, bValiderContrainte, bSuppContrainte;
+	private JButton bChargerCapt, bConnexion, bDeconnexion, bValiderContrainte, bSuppContrainte, bRechargerArbre, bGraphe;
 	private JComboBox<EnumType> cbContrainteTypeMesure;
 	private JComboBox<String> cbFiltreTypeMesure;
 	private JList<String> listContraintes;
 	private DefaultListModel<String> dlm;
 	private JTextField tIntervalleMin, tIntervalleMax;
 	private JTable tListCapt;
-	private DefaultTableModel dtm;
+	private static DefaultTableModel dtm;
 	private JTree tree;
 	
 	public static Reseau reseau;
-	public static Fichier fichier;
+	public static Fichier fichier = new Fichier();
 	public static Runnable tache = new TacheThread();
 	public static Thread thread = new Thread(tache);
 
@@ -96,15 +96,13 @@ public class FenVisu extends JFrame {
 		
 		JScrollPane treeScroll = new JScrollPane(tree);
 		treeScroll.setPreferredSize(new Dimension(400, 170));
-		
-		//---------------------
-		creerListesCapteursDepuisFichier();
-		construireArbre();
-		//--------------------
+
+		bRechargerArbre = new JButton("Recharger");
 		
 		pMid1.add(treeScroll);
+		pMid1.add(bRechargerArbre);
 		
-		
+		bGraphe = new JButton("Graphique");
 		String[] types = EnumType.noms();
 		cbFiltreTypeMesure = new JComboBox<>(types);
 		cbFiltreTypeMesure.insertItemAt("--", 0);
@@ -123,6 +121,7 @@ public class FenVisu extends JFrame {
 		pMid2 = new JPanel();
 		pMid2.add(new JLabel("Filtre :"));
 		pMid2.add(cbFiltreTypeMesure);
+		pMid2.add(bGraphe);
 		pMid2.add(tableScroll);
 		
 		pMid = new JPanel(new GridLayout(2, 1));
@@ -180,6 +179,9 @@ public class FenVisu extends JFrame {
 					if (thread.getState() == Thread.State.TERMINATED)
 						thread = new Thread(tache);
 					thread.start();
+
+					creerListesCapteursDepuisFichier();
+					construireArbre();
 				}
 			}
 		});
@@ -224,7 +226,6 @@ public class FenVisu extends JFrame {
 			@Override
 			public void valueChanged(TreeSelectionEvent e) {
 				remplirTableau();
-				
 			}
 		});
 
@@ -233,7 +234,16 @@ public class FenVisu extends JFrame {
 			public void itemStateChanged(ItemEvent e) {
 				if(e.getStateChange() == ItemEvent.SELECTED) {
 					remplirTableau();
+
 				}
+			}
+		});
+
+		bRechargerArbre.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				creerListesCapteursDepuisFichier();
+				construireArbre();
 			}
 		});
 
@@ -283,6 +293,7 @@ public class FenVisu extends JFrame {
 					String timeStamp = new SimpleDateFormat("yyyy MM dd HH mm ss").format(Calendar.getInstance().getTime());
 					val = val + timeStamp + ";";
 					fichier.ajoutChaine(name, val);
+					FenVisu.modifierValeurCapteur(name, val);
 					break;
 
 				default:
@@ -294,6 +305,8 @@ public class FenVisu extends JFrame {
 	private void construireArbre() {
 		DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
+		root.removeAllChildren();
+		model.reload();
 		
 		if(captExt.size() != 0) {
 			DefaultMutableTreeNode exte = ajouterNode(root, "Exterieur", model);
@@ -355,6 +368,8 @@ public class FenVisu extends JFrame {
 	private void creerListesCapteursDepuisFichier() {
 		File dossier = new File(".");
 		File[] listeFichiers = dossier.listFiles();
+		captExt.clear();
+		captInt.clear();
 		
 		for (int i = 0; i < listeFichiers.length; i++) {
 			File fichier = listeFichiers[i];
@@ -447,6 +462,18 @@ public class FenVisu extends JFrame {
 					dtm.addRow(new Object[] {capteurs.getId(), capteurs.getType(), capteurs.getInterieur()});
 				}
 
+			}
+		}
+	}
+
+	private static void modifierValeurCapteur(String nomCapteur, String infos) {
+		int index;
+
+		infos = infos.replace("--","");
+		String valeur = infos.split(";")[0];
+		for (int i = dtm.getRowCount()-1; i >= 0; i--) {
+			if(dtm.getValueAt(i,0).equals(nomCapteur)) {
+				dtm.setValueAt(valeur, i, 3);
 			}
 		}
 	}
