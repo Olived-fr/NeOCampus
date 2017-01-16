@@ -12,6 +12,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -22,7 +24,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import capteurs.Capteurs;
@@ -53,6 +54,9 @@ public class FenVisu extends JFrame {
 
 	private List<Capteurs> captExt = new ArrayList<>();
 	private List<Capteurs> captInt = new ArrayList<>();
+	private static Map<EnumType, float[]> mapContraintes = new HashMap<>();
+
+	private static ImageIcon iconWarning = new ImageIcon("warning.png");
 	
 	public FenVisu(String titre) {
 		super(titre);
@@ -101,9 +105,21 @@ public class FenVisu extends JFrame {
 		String[] nomsColonnes = {"Identifiant",
 								"Type de mesure",
 								"Localisation",
-								"Valeur"};
-		dtm = new DefaultTableModel(nomsColonnes, 0);
+								"Valeur",
+								""};
+		dtm = new DefaultTableModel(nomsColonnes, 0) {
+			@Override
+			public Class<?> getColumnClass(int column) {
+				switch (column) {
+					case 1: return EnumType.class;
+					case 4: return ImageIcon.class;
+					default: return String.class;
+				}
+			}
+		};
 		tListCapt = new JTable(dtm);
+		tListCapt.getColumnModel().getColumn(4).setMaxWidth(30);
+		tListCapt.getColumnModel().getColumn(4).setMinWidth(30);
 		JScrollPane tableScroll = new JScrollPane(tListCapt);
 		tableScroll.setPreferredSize(new Dimension(580, 150));
 		
@@ -175,20 +191,32 @@ public class FenVisu extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				bDeconnexion.setEnabled(true);
-				bRechargerArbre.setEnabled(true);
-				bConnexion.setEnabled(false);
-				bChargerCapt.setEnabled(false);
-				reseau = new Reseau();
-				if (reseau.getSocket() != null) {
-					reseau.connexionVisu();
-					if (thread.getState() == Thread.State.TERMINATED)
-						thread = new Thread(tache);
-					thread.start();
+				try {
+					if (InetAddress.getByName("127.0.0.1").isReachable(3000)) {
+						bDeconnexion.setEnabled(true);
+						bRechargerArbre.setEnabled(true);
+						bConnexion.setEnabled(false);
+						bChargerCapt.setEnabled(false);
+						reseau = new Reseau();
+						if (reseau.getSocket() != null) {
+							reseau.connexionVisu();
+							if (thread.getState() == Thread.State.TERMINATED)
+								thread = new Thread(tache);
+							thread.start();
 
-					creerListesCapteursDepuisFichier(true, null);
-					construireArbre();
+							creerListesCapteursDepuisFichier(true, null);
+							construireArbre();
+						}
+					}
+					else {
+						JOptionPane.showMessageDialog(new JFrame(), "Aucun serveur connecté", "Erreur serveur", JOptionPane.ERROR_MESSAGE);
+					}
+				}catch (UnknownHostException ex) {
+					ex.printStackTrace();
+				} catch (IOException ex) {
+					ex.printStackTrace();
 				}
+
 			}
 		});
 		
@@ -209,11 +237,19 @@ public class FenVisu extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				float[] intervalle = new float[2];
 				EnumType type = (EnumType) cbContrainteTypeMesure.getSelectedItem();
 				float intMin = Float.valueOf(tIntervalleMin.getText());
 				float intMax = Float.valueOf(tIntervalleMax.getText());
-				
-				dlm.addElement(type.toString() + "  |  [" + intMin + "-" + intMax + "]");
+
+				if(!mapContraintes.containsKey(type)) {
+					intervalle[0] = intMin;
+					intervalle[1] = intMax;
+					mapContraintes.put(type, intervalle);
+
+					dlm.addElement(type.toString() + "  |  [" + intMin + "-" + intMax + "]");
+				}
+
 			}
 		});
 		
@@ -224,6 +260,11 @@ public class FenVisu extends JFrame {
 				int index = listContraintes.getSelectedIndex();
 				
 				if(index != -1) {
+					String contrainte = dlm.getElementAt(index);
+					contrainte = contrainte.replace(" ","");
+					StringTokenizer tok = new StringTokenizer(contrainte,"|");
+					String typeStr = (String)tok.nextElement();
+					mapContraintes.remove(EnumType.valueOf(typeStr));
 					dlm.remove(index);
 				}
 			}
@@ -495,6 +536,15 @@ public class FenVisu extends JFrame {
 		for (int i = dtm.getRowCount()-1; i >= 0; i--) {
 			if(dtm.getValueAt(i,0).equals(nomCapteur)) {
 				dtm.setValueAt(valeur, i, 3);
+				EnumType type = (EnumType) dtm.getValueAt(i,1);
+				if (mapContraintes.containsKey(type)) {
+					if (Float.valueOf(valeur) < mapContraintes.get(type)[0] || Float.valueOf(valeur) > mapContraintes.get(type)[1])
+					{
+						dtm.setValueAt(iconWarning, i, 4);
+					} else {
+						dtm.setValueAt("", i, 4);
+					}
+				}
 			}
 		}
 	}
