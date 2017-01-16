@@ -178,6 +178,7 @@ public class FenVisu extends JFrame {
 				bDeconnexion.setEnabled(true);
 				bRechargerArbre.setEnabled(true);
 				bConnexion.setEnabled(false);
+				bChargerCapt.setEnabled(false);
 				reseau = new Reseau();
 				if (reseau.getSocket() != null) {
 					reseau.connexionVisu();
@@ -198,6 +199,7 @@ public class FenVisu extends JFrame {
 				bConnexion.setEnabled(true);
 				bDeconnexion.setEnabled(false);
 				bRechargerArbre.setEnabled(false);
+				bChargerCapt.setEnabled(true);
 				thread.stop();
 				reseau.deconnexionVisu();
 			}
