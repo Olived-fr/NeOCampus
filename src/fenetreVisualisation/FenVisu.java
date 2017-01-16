@@ -5,10 +5,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -60,7 +57,7 @@ public class FenVisu extends JFrame {
 	private JTree tree;
 	
 	public static Reseau reseau;
-	public static Fichier fichier = new Fichier();
+	public static Fichier fichier;
 	public static Runnable tache = new TacheThread();
 	public static Thread thread = new Thread(tache);
 
@@ -226,56 +223,17 @@ public class FenVisu extends JFrame {
 			
 			@Override
 			public void valueChanged(TreeSelectionEvent e) {
-				DefaultMutableTreeNode node =  (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+				remplirTableau();
 				
-				if(node == null)
-					return;
-				
-				if(dtm.getRowCount() > 0) {
-					for (int i = dtm.getRowCount()-1; i > -1; i--) {
-						dtm.removeRow(i);
-					}
+			}
+		});
+
+		cbFiltreTypeMesure.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if(e.getStateChange() == ItemEvent.SELECTED) {
+					remplirTableau();
 				}
-				
-				String nodeNom = node.getUserObject().toString();
-				TreeNode[] nodes = node.getPath();
-				if(nodeNom.equalsIgnoreCase("capteurs")) {
-					for (Capteurs capteurs : captExt) {
-						dtm.addRow(new Object[] {capteurs.getId(), capteurs.getType(), capteurs.getGps()});
-					}
-					
-					for (Capteurs capteurs : captInt) {
-						dtm.addRow(new Object[] {capteurs.getId(), capteurs.getType(), capteurs.getInterieur()});
-					}
-				} else if(nodes[1].toString().equalsIgnoreCase("exterieur")) {
-					boolean captSelect = nodeNom.equalsIgnoreCase(nodes[1].toString());
-					for (Capteurs capteurs : captExt) {
-						if(captSelect || capteurs.getId().equalsIgnoreCase(nodeNom)) {
-							dtm.addRow(new Object[] {capteurs.getId(), capteurs.getType(), capteurs.getGps()});
-						}
-							
-					}
-				} else if(nodes[1].toString().equalsIgnoreCase("interieur")) {
-					int profondeur = nodes.length;
-					
-					for (Capteurs capteurs : captInt) {
-						CoordInterieur interieur = capteurs.getInterieur();
-						if(profondeur == 2 || (profondeur == 3 && interieur.getBatiment().equalsIgnoreCase(nodeNom))
-								|| (profondeur == 4 && interieur.getBatiment().equalsIgnoreCase(nodes[2].toString()) 
-													&& interieur.getEtage().equalsIgnoreCase(nodeNom))
-								|| (profondeur == 5 && interieur.getBatiment().equalsIgnoreCase(nodes[2].toString())
-													&& interieur.getEtage().equalsIgnoreCase(nodes[3].toString())
-													&& interieur.getSalle().equalsIgnoreCase(nodeNom))
-								|| (profondeur == 6 && interieur.getBatiment().equalsIgnoreCase(nodes[2].toString())
-													&& interieur.getEtage().equalsIgnoreCase(nodes[3].toString())
-													&& interieur.getSalle().equalsIgnoreCase(nodes[4].toString())
-													&& capteurs.getId().equalsIgnoreCase(nodeNom))) {
-							dtm.addRow(new Object[] {capteurs.getId(), capteurs.getType(), capteurs.getInterieur()});
-						}
-						
-					}
-				}
-				
 			}
 		});
 
@@ -430,6 +388,65 @@ public class FenVisu extends JFrame {
 					}
 				}
 					
+			}
+		}
+	}
+
+	private void remplirTableau() {
+		DefaultMutableTreeNode node =  (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+
+		if(node == null)
+			return;
+
+		if(dtm.getRowCount() > 0) {
+			for (int i = dtm.getRowCount()-1; i > -1; i--) {
+				dtm.removeRow(i);
+			}
+		}
+
+		String filtre = (String) cbFiltreTypeMesure.getSelectedItem();
+		boolean filtrer = !filtre.equals("--");
+
+		String nodeNom = node.getUserObject().toString();
+		TreeNode[] nodes = node.getPath();
+		if(nodeNom.equalsIgnoreCase("capteurs")) {
+			for (Capteurs capteurs : captExt) {
+				if(!filtrer || capteurs.getType().toString().equals(filtre))
+					dtm.addRow(new Object[] {capteurs.getId(), capteurs.getType(), capteurs.getGps()});
+			}
+
+			for (Capteurs capteurs : captInt) {
+				if(!filtrer || capteurs.getType().toString().equals(filtre))
+					dtm.addRow(new Object[] {capteurs.getId(), capteurs.getType(), capteurs.getInterieur()});
+			}
+		} else if(nodes[1].toString().equalsIgnoreCase("exterieur")) {
+			boolean captSelect = nodeNom.equalsIgnoreCase(nodes[1].toString());
+			for (Capteurs capteurs : captExt) {
+				if(captSelect || capteurs.getId().equalsIgnoreCase(nodeNom)
+						&& (!filtrer || capteurs.getType().toString().equals(filtre))) {
+					dtm.addRow(new Object[] {capteurs.getId(), capteurs.getType(), capteurs.getGps()});
+				}
+
+			}
+		} else if(nodes[1].toString().equalsIgnoreCase("interieur")) {
+			int profondeur = nodes.length;
+
+			for (Capteurs capteurs : captInt) {
+				CoordInterieur interieur = capteurs.getInterieur();
+				if((profondeur == 2 || (profondeur == 3 && interieur.getBatiment().equalsIgnoreCase(nodeNom))
+						|| (profondeur == 4 && interieur.getBatiment().equalsIgnoreCase(nodes[2].toString())
+						&& interieur.getEtage().equalsIgnoreCase(nodeNom))
+						|| (profondeur == 5 && interieur.getBatiment().equalsIgnoreCase(nodes[2].toString())
+						&& interieur.getEtage().equalsIgnoreCase(nodes[3].toString())
+						&& interieur.getSalle().equalsIgnoreCase(nodeNom))
+						|| (profondeur == 6 && interieur.getBatiment().equalsIgnoreCase(nodes[2].toString())
+						&& interieur.getEtage().equalsIgnoreCase(nodes[3].toString())
+						&& interieur.getSalle().equalsIgnoreCase(nodes[4].toString())
+						&& capteurs.getId().equalsIgnoreCase(nodeNom)))
+						&& (!filtrer || capteurs.getType().toString().equals(filtre))) {
+					dtm.addRow(new Object[] {capteurs.getId(), capteurs.getType(), capteurs.getInterieur()});
+				}
+
 			}
 		}
 	}
