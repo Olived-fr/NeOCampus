@@ -23,7 +23,6 @@ import javax.swing.table.DefaultTableModel;
 
 import capteurs.Capteurs;
 
-import static com.sun.tools.doclint.Entity.and;
 import static java.awt.SystemColor.text;
 
 

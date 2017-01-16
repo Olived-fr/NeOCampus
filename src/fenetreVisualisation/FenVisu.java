@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
@@ -25,6 +26,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreeSelectionModel;
+
+import org.jfree.ui.RefineryUtilities;
 
 import capteurs.Capteurs;
 import capteurs.CoordGps;
@@ -46,6 +49,7 @@ public class FenVisu extends JFrame {
 	private static DefaultTableModel dtm;
 	private JTree tree;
 	private final JFileChooser fc = new JFileChooser();
+	private int indexLigneSelect ;
 	
 	public static Reseau reseau;
 	public static Fichier fichier = new Fichier();
@@ -186,6 +190,110 @@ public class FenVisu extends JFrame {
 				}
 			}
 		});
+		
+		bGraphe.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				indexLigneSelect = tListCapt.getSelectedRow();
+				if(indexLigneSelect == -1){
+					JOptionPane.showMessageDialog(null, "Veuillez selectionner une ligne afin d'afficher le graphe correspondant", "Attention", JOptionPane.WARNING_MESSAGE);
+				}
+				else {
+					
+					String idCapteur =tListCapt.getValueAt(indexLigneSelect, 0).toString() ;
+					
+					File folder = new File("./");
+					List<File> files = Arrays.asList(folder.listFiles());
+			        Iterator<File> fileIterator = files.iterator();
+			        //System.out.println("fichiers : " + files.toString());
+			        boolean find = false;
+			        String filename = ""; 
+			        while(fileIterator.hasNext() &&  !find){
+			        	File tmp = fileIterator.next();
+			        	if(!tmp.isDirectory()){
+				        	filename = tmp.getName();
+				        	System.out.println("filename : " + filename);
+				        	if(filename.equals(idCapteur+".txt"))
+				        		find = true ; 
+			        	}
+			        	
+			        }
+			        if(find){
+			        	System.out.println("finded ! ");
+			        	List<ValeursTempsCapteurs> liste =  new ArrayList();
+			        	
+			        		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+
+			                try
+			                {
+			                BufferedReader br = new BufferedReader(new FileReader(filename));
+			                String line=br.readLine();
+			                //line = br.readLine();
+			                StringTokenizer st=new StringTokenizer(line, ";");
+			                //StringTokenizer space=new StringTokenizer(line, " ");
+			                int counter = 0,heure=0, minutes=0,secondes=0 ;
+			                float valeur= 0.0F ;
+			                Date date = null;
+			                String tmp ;
+			                while ((line = br.readLine()) != null) {
+			                	counter = 0 ;
+			                st=new StringTokenizer(line, ";");
+			                
+			                while(st.hasMoreTokens()){
+			                	if(counter == 0){
+			                		tmp = st.nextToken(); 
+			                	if(tmp.length()==6)
+			                		valeur = Float.parseFloat(tmp.substring(2, 6));
+			                	else if(tmp.length()==7)
+			                		valeur = Float.parseFloat(tmp.substring(2, 7));
+			                	else if(tmp.length()==5)
+			                		valeur = Float.parseFloat(tmp.substring(2, 5));
+			                	}else if(counter ==1){
+			                		tmp = st.nextToken();
+			                		//System.out.println(tmp.substring(8, 10) +"-"+tmp.substring(5, 7)+"-"+tmp.substring(0, 4));
+			                		date = sdf.parse(tmp.substring(8, 10) +"-"+tmp.substring(5, 7)+"-"+tmp.substring(0, 4));
+			                		heure = Integer.parseInt(tmp.substring(11, 13));
+			                		minutes = Integer.parseInt(tmp.substring(14, 16));
+			                		secondes = Integer.parseInt(tmp.substring(17, 19));
+			                	}
+			                	
+			                	counter ++; 
+			                } 
+			               // System.out.println("valeur : " + valeur + " date : " + date.toString() + " heure : "+ heure + " minutes : " +minutes);
+			                liste.add(new ValeursTempsCapteurs(valeur, date, heure, minutes, secondes)) ;
+			                //line = br.readLine(); // ATTTENTION APPAREMMENT BESOIN DE 2 FOIS POUR PASSER A LIGNE SUIVANTE
+			                }
+			                br.close();
+			                }
+			                catch (Exception et){
+			                et.printStackTrace();
+			                }
+			        	
+			        	CreationGraphique graphe = new CreationGraphique("Données du capteur sélectionné par rapport à la date/heure", " Données Capteur " + idCapteur, idCapteur, liste);
+			        	 
+			        	graphe.pack( );
+			            RefineryUtilities.centerFrameOnScreen( graphe );          
+			            graphe.setVisible( true ); 
+			            graphe.addWindowListener(new WindowAdapter(){
+			            	public void windowClosing(){
+			            		System.out.println("ON ARRIVE LA OU PAS ? ");
+			            		graphe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			            	}
+			            });
+			            System.out.println("NORMALEMENT C BON");
+			        	
+			        }else {
+			        	JOptionPane.showMessageDialog(null, "Pas de fichier correspondant à ce capteur", "Information", JOptionPane.INFORMATION_MESSAGE);
+			        }
+				}
+			
+			
+			
+			}
+		});
+		
+		
 
 		bConnexion.addActionListener(new ActionListener() {
 			
