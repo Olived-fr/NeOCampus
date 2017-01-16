@@ -38,6 +38,7 @@ public class FenSimulationSuiv extends JFrame {
 	JButton tFrequenceButton ;
 	Integer champFrequence = 0;
 	JFrame laFen, fenPrec;
+	Timer timer = null;
 
 	public FenSimulationSuiv(String titre, JFrame prec, List<Capteurs> listeCapteurs) {
 		super(titre);
@@ -101,6 +102,8 @@ public class FenSimulationSuiv extends JFrame {
 				for(Capteurs capt : listeCapteurs) {
 					capt.deconnexionCapteur();
 				}
+				if (timer != null && timer.isRunning())
+					timer.stop();
 				laFen.dispose();
 				fenPrec.setVisible(true);
 			}
@@ -111,6 +114,8 @@ public class FenSimulationSuiv extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try{
+					if (timer != null && timer.isRunning())
+						timer.stop();
 					String text = tFrequence.getText();
 					champFrequence = Integer.parseInt(text) ;
 					ActionListener action = new ActionListener() {
@@ -132,7 +137,8 @@ public class FenSimulationSuiv extends JFrame {
 					      }
 					  };
 					  //atention timer en miliseconde
-					  new Timer((champFrequence*1000), action).start();
+					timer = new Timer((champFrequence*1000), action);
+					timer.start();
 				}
 				catch(NumberFormatException E){
 					
