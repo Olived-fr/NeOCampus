@@ -6,28 +6,43 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.Random;
 
 
 public class Reseau {
 
-    private final static int NUMERO_PORT= 7888;
+    public final static int NUMERO_PORT= 7888;
 
     private Socket socket = null;
 
     public Reseau() {
+         if (isPortInUse("127.0.0.1",NUMERO_PORT))
+            try {
+                socket = new Socket(InetAddress.getByName("127.0.0.1"),NUMERO_PORT);
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+    }
+
+
+    public boolean isPortInUse(String host, int port) {
+        boolean result = false;
 
         try {
-            socket = new Socket(InetAddress.getByName("127.0.0.1"),NUMERO_PORT);
+            (new Socket(host, port)).close();
+            result = true;
+        } catch (SocketException e) {
+            e.printStackTrace();
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return result;
     }
 
     public void connexionVisu() {

@@ -270,7 +270,7 @@ public class FenVisu extends JFrame {
 			                et.printStackTrace();
 			                }
 			        	
-			        	CreationGraphique graphe = new CreationGraphique("Données du capteur sélectionné par rapport à la date/heure", " Données Capteur " + idCapteur, idCapteur, liste);
+			        	CreationGraphique graphe = new CreationGraphique("Donnees du capteur selectionne par rapport a la date/heure", " Donnees Capteur " + idCapteur, idCapteur, liste);
 			        	 
 			        	graphe.pack( );
 			            RefineryUtilities.centerFrameOnScreen( graphe );          
@@ -284,7 +284,7 @@ public class FenVisu extends JFrame {
 			            System.out.println("NORMALEMENT C BON");
 			        	
 			        }else {
-			        	JOptionPane.showMessageDialog(null, "Pas de fichier correspondant à ce capteur", "Information", JOptionPane.INFORMATION_MESSAGE);
+			        	JOptionPane.showMessageDialog(null, "Pas de fichier correspondant a ce capteur", "Information", JOptionPane.INFORMATION_MESSAGE);
 			        }
 				}
 			
@@ -299,32 +299,23 @@ public class FenVisu extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					if (InetAddress.getByName("127.0.0.1").isReachable(3000)) {
-						bDeconnexion.setEnabled(true);
-						bRechargerArbre.setEnabled(true);
-						bConnexion.setEnabled(false);
-						bChargerCapt.setEnabled(false);
-						reseau = new Reseau();
-						if (reseau.getSocket() != null) {
-							reseau.connexionVisu();
-							if (thread.getState() == Thread.State.TERMINATED)
-								thread = new Thread(tache);
-							thread.start();
 
-							creerListesCapteursDepuisFichier(true, null);
-							construireArbre();
-						}
-					}
-					else {
-						JOptionPane.showMessageDialog(new JFrame(), "Aucun serveur connectÃ©", "Erreur serveur", JOptionPane.ERROR_MESSAGE);
-					}
-				}catch (UnknownHostException ex) {
-					ex.printStackTrace();
-				} catch (IOException ex) {
-					ex.printStackTrace();
+				reseau = new Reseau();
+				if (!reseau.isPortInUse("127.0.0.1",Reseau.NUMERO_PORT)) {
+					JOptionPane.showMessageDialog(new JFrame(), "Aucun serveur connectÃ©", "Erreur serveur", JOptionPane.ERROR_MESSAGE);
 				}
-
+				else if (reseau.getSocket() != null) {
+					bDeconnexion.setEnabled(true);
+					bRechargerArbre.setEnabled(true);
+					bConnexion.setEnabled(false);
+					bChargerCapt.setEnabled(false);
+					reseau.connexionVisu();
+					if (thread.getState() == Thread.State.TERMINATED)
+						thread = new Thread(tache);
+					thread.start();
+					creerListesCapteursDepuisFichier(true, null);
+					construireArbre();
+				}
 			}
 		});
 		
@@ -410,7 +401,7 @@ public class FenVisu extends JFrame {
 			public void windowClosing(WindowEvent e)
 			{
 				thread.stop();
-				if (reseau != null && reseau.getSocket() != null)
+				if (reseau != null && reseau.getSocket() != null && !reseau.getSocket().isClosed())
 					reseau.deconnexionVisu();
 				e.getWindow().dispose();
 			}

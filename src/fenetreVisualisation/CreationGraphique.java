@@ -36,7 +36,6 @@ public class CreationGraphique extends JFrame{
 					int year = c.get(Calendar.YEAR);
 					int month = c.get(Calendar.MONTH);
 					int day = c.get(Calendar.DAY_OF_MONTH);
-					System.out.println("OKAY le full temps: " + day + " " + (month+1) + " " + year );
 					
 					capteurs.add( new Second(tmp.getSecondes(), tmp.getMinutes(), tmp.getHeures(), day, month+1, year),(float)tmp.getValeurs());
 				}
