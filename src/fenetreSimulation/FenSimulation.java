@@ -135,9 +135,10 @@ public class FenSimulation extends JFrame {
 							valeur = rand.nextFloat() * (maxIntervalle - minIntervalle) + minIntervalle;
 							valeur = Math.round(valeur*(float)100.0) / (float)100.0;
 						}
-						
+
+						Integer port = Integer.valueOf(JOptionPane.showInputDialog("Port du serveur"));
 						//
-						listeCapteurs.add(new Capteurs(id, type, loc, minIntervalle, maxIntervalle, gps, inte, saisieValeur, valeur));
+						listeCapteurs.add(new Capteurs(id, type, loc, minIntervalle, maxIntervalle, gps, inte, saisieValeur, valeur,port));
 						
 						//Ajout des champs au tableau
 						dtm.addRow(new Object[] {numCapt, id, loc, localisation, type, intervalle});

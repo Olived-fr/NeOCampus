@@ -12,14 +12,12 @@ import java.util.Random;
 
 public class Reseau {
 
-    public final static int NUMERO_PORT= 7888;
-
     private Socket socket = null;
 
-    public Reseau() {
-         if (isPortInUse("127.0.0.1",NUMERO_PORT))
+    public Reseau(int port) {
+         if (isPortInUse("127.0.0.1",port))
             try {
-                socket = new Socket(InetAddress.getByName("127.0.0.1"),NUMERO_PORT);
+                socket = new Socket(InetAddress.getByName("127.0.0.1"),port);
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -45,11 +43,11 @@ public class Reseau {
         return result;
     }
 
-    public void connexionVisu() {
+    public void connexionVisu(int port) {
         PrintStream printer = null;
         try {
             if (this.getSocket().isClosed()) {
-                socket = new Socket(InetAddress.getByName("127.0.0.1"),NUMERO_PORT);
+                socket = new Socket(InetAddress.getByName("127.0.0.1"),port);
             }
             printer = new PrintStream(this.getSocket().getOutputStream());
         } catch (IOException e) {

@@ -17,9 +17,10 @@ public class Capteurs {
 	private boolean saisieValeur ; 
 	private float valeur ;
 	private Reseau reseau ;
+	private int port;
 	
 	public Capteurs(String id, EnumType type, String localisation, float intervalleMin,
-			float intervalleMax, CoordGps gps, CoordInterieur interieur,boolean saisieValeur, float valeur){
+			float intervalleMax, CoordGps gps, CoordInterieur interieur,boolean saisieValeur, float valeur, int port){
 		this.id = id ;
 		this.type = type ; 
 		this.localisation = localisation ; 
@@ -29,6 +30,7 @@ public class Capteurs {
 		this.interieur = interieur ;
 		this.saisieValeur = saisieValeur ;
 		this.valeur = valeur ;
+		this.port = port;
 
 		
 	}
@@ -77,9 +79,13 @@ public class Capteurs {
 		return reseau;
 	}
 
+	public int getPort() {
+		return port;
+	}
+
 	public void connexionCapteur() {
 
-		reseau = new Reseau();
+		reseau = new Reseau(port);
 		PrintStream printer = null;
 		try {
 			printer = new PrintStream(reseau.getSocket().getOutputStream());

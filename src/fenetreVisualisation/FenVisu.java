@@ -48,7 +48,7 @@ public class FenVisu extends JFrame {
 	private JTable tListCapt;
 	private static DefaultTableModel dtm;
 	private JTree tree;
-	private final JFileChooser fc = new JFileChooser();
+	private final JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
 	private int indexLigneSelect ;
 	
 	public static Reseau reseau;
@@ -119,6 +119,11 @@ public class FenVisu extends JFrame {
 					case 4: return ImageIcon.class;
 					default: return String.class;
 				}
+			}
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				//all cells false
+				return false;
 			}
 		};
 		tListCapt = new JTable(dtm);
@@ -213,14 +218,12 @@ public class FenVisu extends JFrame {
 			        	File tmp = fileIterator.next();
 			        	if(!tmp.isDirectory()){
 				        	filename = tmp.getName();
-				        	System.out.println("filename : " + filename);
 				        	if(filename.equals(idCapteur+".txt"))
 				        		find = true ; 
 			        	}
 			        	
 			        }
 			        if(find){
-			        	System.out.println("finded ! ");
 			        	List<ValeursTempsCapteurs> liste =  new ArrayList();
 			        	
 			        		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
@@ -277,11 +280,9 @@ public class FenVisu extends JFrame {
 			            graphe.setVisible( true ); 
 			            graphe.addWindowListener(new WindowAdapter(){
 			            	public void windowClosing(){
-			            		System.out.println("ON ARRIVE LA OU PAS ? ");
 			            		graphe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			            	}
 			            });
-			            System.out.println("NORMALEMENT C BON");
 			        	
 			        }else {
 			        	JOptionPane.showMessageDialog(null, "Pas de fichier correspondant a ce capteur", "Information", JOptionPane.INFORMATION_MESSAGE);
@@ -300,8 +301,9 @@ public class FenVisu extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				reseau = new Reseau();
-				if (!reseau.isPortInUse("127.0.0.1",Reseau.NUMERO_PORT)) {
+				Integer port = Integer.valueOf(JOptionPane.showInputDialog("Port du serveur"));
+				reseau = new Reseau(port);
+				if (!reseau.isPortInUse("127.0.0.1",port)) {
 					JOptionPane.showMessageDialog(new JFrame(), "Aucun serveur connecté", "Erreur serveur", JOptionPane.ERROR_MESSAGE);
 				}
 				else if (reseau.getSocket() != null) {
@@ -309,7 +311,7 @@ public class FenVisu extends JFrame {
 					bRechargerArbre.setEnabled(true);
 					bConnexion.setEnabled(false);
 					bChargerCapt.setEnabled(false);
-					reseau.connexionVisu();
+					reseau.connexionVisu(port);
 					if (thread.getState() == Thread.State.TERMINATED)
 						thread = new Thread(tache);
 					thread.start();
@@ -419,6 +421,7 @@ public class FenVisu extends JFrame {
 			switch (type) {
 
 				case "CapteurPresent":
+					System.out.println("test");
 					fichier.nouveauFichier(chaineCapteur);
 					String infos = "//";
 					while (Tok.hasMoreElements()) {
@@ -428,9 +431,9 @@ public class FenVisu extends JFrame {
 					reseau.inscriptionCapteur(name);
 					break;
 
-				case "InscriptionCapteurKO":
-				case "DesinscriptionCapteurKO":
-				case "CapteurDeco":
+				case "InscriptionCapteurKO": JOptionPane.showMessageDialog(new JFrame(), "Erreur d'inscription de capteur", "Erreur inscription", JOptionPane.ERROR_MESSAGE);
+				case "DesinscriptionCapteurKO": JOptionPane.showMessageDialog(new JFrame(), "Erreur de desinscription de capteur", "Erreur desinscription", JOptionPane.ERROR_MESSAGE);
+				case "CapteurDeco": JOptionPane.showMessageDialog(new JFrame(), "Deconnexion de capteur", "Deconnexion capteur", JOptionPane.WARNING_MESSAGE);
 					break;
 
 				case "ValeurCapteur":
@@ -546,9 +549,9 @@ public class FenVisu extends JFrame {
 					String[] infos = ligne.split(";");
 					
 					if(infos.length == 3) {
-						captExt.add(new Capteurs(fichier.getName().replace(".txt", ""), EnumType.valueOf(infos[0]), "Exterieur", .0f, .0f, new CoordGps(new Float(infos[1]), new Float(infos[2])), null, false, .0f));
+						captExt.add(new Capteurs(fichier.getName().replace(".txt", ""), EnumType.valueOf(infos[0]), "Exterieur", .0f, .0f, new CoordGps(new Float(infos[1]), new Float(infos[2])), null, false, .0f,0));
 					} else if(infos.length == 5) {
-						captInt.add(new Capteurs(fichier.getName().replace(".txt", ""), EnumType.valueOf(infos[0]), "Interieur", .0f, .0f, null, new CoordInterieur(infos[1], infos[2], infos[3], infos[4]), false, .0f));
+						captInt.add(new Capteurs(fichier.getName().replace(".txt", ""), EnumType.valueOf(infos[0]), "Interieur", .0f, .0f, null, new CoordInterieur(infos[1], infos[2], infos[3], infos[4]), false, .0f,0));
 					}
 					
 				} catch (FileNotFoundException e) {
@@ -643,6 +646,9 @@ public class FenVisu extends JFrame {
 					} else {
 						dtm.setValueAt("", i, 4);
 					}
+				}
+				else {
+					dtm.setValueAt("", i, 4);
 				}
 			}
 		}
